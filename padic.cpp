@@ -24,6 +24,8 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
+#include <cassert>
 
 
 namespace flint 
@@ -54,7 +56,27 @@ namespace flint
         }
     };
 
-    class Fmpz {
+    class Base 
+    {
+    private:
+        int _b;
+    public:
+        Base(int b) : _b(b) 
+        {
+            assert(b >= 2);
+            assert(b <= 62);
+        }
+
+        // cast to int
+        operator int() const 
+        {
+            return _b;
+        }
+
+    };
+
+    class Fmpz 
+    {
     private:
         std::shared_ptr<PadicCtx> _ctx;
         fmpz_t _val;
@@ -80,12 +102,27 @@ namespace flint
             fmpz_set_si(_val, val);
         }
 
+        std::string toString(const Base b) const
+        {
+            char* str = fmpz_get_str(nullptr, static_cast<int>(b), _val);
+            return std::string(str);
+        }
+
         ~Fmpz() 
         {
             fmpz_clear(_val);
         }
+
+
+
+        friend std::ostream& operator<<(std::ostream& os, const Fmpz& x)
+        {
+            os << x.toString(Base(10));
+            return os;
+        }
     };
 }
+
 
 int main() 
 {
@@ -95,9 +132,14 @@ int main()
     flint::Fmpz tmp_b(ctx, static_cast<flint::unsigned_long_t>(10));
     flint::Fmpz tmp_c(ctx, static_cast<flint::unsigned_long_t>(1000000000));
 
-    tmp_a.set( static_cast<flint::unsigned_long_t>(1024) );
-    tmp_b.set( static_cast<flint::signed_long_t>(-1024) );
+    tmp_a.set( static_cast<flint::unsigned_long_t>(1023) );
+    tmp_b.set( static_cast<flint::signed_long_t>(-1023) );
 
+    std::cout << "tmp_a: " << tmp_a << std::endl;
+    std::cout << "tmp_b: " << tmp_b << std::endl;
+
+    std::cout << "tmp_a: " << tmp_a.toString(flint::Base(2)) << std::endl;
+    std::cout << "tmp_b: " << tmp_b.toString(flint::Base(2)) << std::endl;
 
     ctx->setPrintMode(flint::PadicPrintMode::PADIC_TERSE);
 
