@@ -17,9 +17,52 @@
 #include <stdio.h>
 #include <gmp.h>
 
-#include "flint.h"
-#include "padic.h"
+#include <flint/flint.h>
+#include <flint/fmpz.h>
+#include <flint/fmpz_mod_poly.h>
+#include <flint/padic.h>
 
+#include <memory>
+
+
+namespace flint 
+{
+
+    class padic_ctx 
+    {
+    private:
+        padic_ctx_t _ctx;
+
+    public:
+        padic_ctx() 
+        {
+        }
+    };
+
+    class fmpz {
+    private:
+        std::shared_ptr<padic_ctx> _ctx;
+
+    public:
+        fmpz(std::shared_ptr<padic_ctx> ctx) : _ctx(ctx) 
+        {
+        }
+
+        ~fmpz() 
+        {
+        }
+    };
+}
+
+int main() 
+{
+    auto ctx = std::make_shared<flint::padic_ctx>();
+    flint::fmpz fmpz(ctx);
+
+    return 0;
+}
+
+/*
 int main(void)
 {
     fmpz_t p;
@@ -30,7 +73,7 @@ int main(void)
 
     flint_printf("Output:\n\n");
 
-    /* Case 1 */
+    // Case 1
     flint_printf("Positive integer:  x = 127 mod 7^10\n");
 
     fmpz_init(p);
@@ -63,7 +106,7 @@ int main(void)
     padic_ctx_clear(ctx);
     fmpz_clear(p);
 
-    /* Case 2 */
+    // Case 2 
     flint_printf("Positive integer larger than p^N:  x = 1057 mod 2^10\n");
 
     fmpz_init(p);
@@ -96,7 +139,7 @@ int main(void)
     padic_ctx_clear(ctx);
     fmpz_clear(p);
 
-    /* Case 3 */
+    // Case 3 
     flint_printf("Negative integer:  x = -127 mod 3^10\n");
 
     fmpz_init(p);
@@ -123,7 +166,7 @@ int main(void)
     padic_ctx_clear(ctx);
     fmpz_clear(p);
 
-    /* Log */
+    // Log 
     flint_printf("Log of 7380996 mod 5^20\n");
 
     fmpz_init(p);
@@ -147,4 +190,4 @@ int main(void)
 
     return 0;
 }
-
+*/
