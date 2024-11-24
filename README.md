@@ -15,3 +15,8 @@ Enter non-Archimedean algebraic geometry:
 * $`\mathbb{Q_p}`$ is the field of $`p`$ -adic numbers, where $`p`$ is a prime number.
 * $`\overline{\mathbb{Q_p}}`$ is the algebraic closure of $`\mathbb{Q_p}`$.
 
+## why C++?
+* C - boring ever since Stroustrup wrote a bunch of C macros.
+* FORTRAN - unfortunately, the FLINT (Fast Library for Number Theory) library is implemented in C instead of FORTRAN.
+* COBOL - please send us an e-mail if you need a $`p`$ -adic arithmetic library for COBOL.
+* rust - please feel free to re-implement this code in rust.
