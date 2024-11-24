@@ -23,3 +23,4 @@ add_executable(padic padic.cpp)
 
 
 target_link_libraries(padic flint)
+set_property(TARGET padic PROPERTY CXX_STANDARD 23)

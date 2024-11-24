@@ -22,12 +22,21 @@
 #include <flint/fmpz_mod_poly.h>
 #include <flint/padic.h>
 
+#include <iostream>
 #include <memory>
 
 
 namespace flint 
 {
-    
+    using unsigned_long_t = mp_limb_t;
+
+    enum class PadicPrintMode : uint8_t
+    {
+        PADIC_TERSE = PADIC_TERSE,
+        PADIC_SERIES = PADIC_SERIES,
+        PADIC_VAL_UNIT = PADIC_VAL_UNIT
+    };
+
     class PadicCtx 
     {
     private:
@@ -37,19 +46,37 @@ namespace flint
         PadicCtx() 
         {
         }
+
+        void setPrintMode(PadicPrintMode mode) 
+        {
+            _ctx->mode = static_cast<padic_print_mode>(mode);
+        }
     };
 
     class Fmpz {
     private:
         std::shared_ptr<PadicCtx> _ctx;
+        fmpz_t _val;
 
     public:
         Fmpz(std::shared_ptr<PadicCtx> ctx) : _ctx(ctx) 
         {
+            fmpz_init(_val);
+        }
+
+        Fmpz(std::shared_ptr<PadicCtx> ctx, const unsigned_long_t limbs) : _ctx(ctx) 
+        {
+            fmpz_init2(_val, limbs);
+        }
+
+        void set(const unsigned_long_t val) 
+        {
+            fmpz_set_ui(_val, val);
         }
 
         ~Fmpz() 
         {
+            fmpz_clear(_val);
         }
     };
 }
@@ -57,7 +84,12 @@ namespace flint
 int main() 
 {
     auto ctx = std::make_shared<flint::PadicCtx>();
-    flint::Fmpz fmpz(ctx);
+
+    flint::Fmpz tmp_a(ctx);
+    flint::Fmpz tmp_b(ctx, (flint::unsigned_long_t)10);
+    flint::Fmpz tmp_c(ctx, (flint::unsigned_long_t)1000000000);
+
+    ctx->setPrintMode(flint::PadicPrintMode::PADIC_TERSE);
 
     return 0;
 }
