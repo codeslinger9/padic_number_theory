@@ -29,6 +29,7 @@
 namespace flint 
 {
     using unsigned_long_t = mp_limb_t;
+    using signed_long_t = mp_limb_signed_t;
 
     enum class PadicPrintMode : uint8_t
     {
@@ -74,6 +75,11 @@ namespace flint
             fmpz_set_ui(_val, val);
         }
 
+        void set(const signed_long_t val) 
+        {
+            fmpz_set_si(_val, val);
+        }
+
         ~Fmpz() 
         {
             fmpz_clear(_val);
@@ -86,8 +92,12 @@ int main()
     auto ctx = std::make_shared<flint::PadicCtx>();
 
     flint::Fmpz tmp_a(ctx);
-    flint::Fmpz tmp_b(ctx, (flint::unsigned_long_t)10);
-    flint::Fmpz tmp_c(ctx, (flint::unsigned_long_t)1000000000);
+    flint::Fmpz tmp_b(ctx, static_cast<flint::unsigned_long_t>(10));
+    flint::Fmpz tmp_c(ctx, static_cast<flint::unsigned_long_t>(1000000000));
+
+    tmp_a.set( static_cast<flint::unsigned_long_t>(1024) );
+    tmp_b.set( static_cast<flint::signed_long_t>(-1024) );
+
 
     ctx->setPrintMode(flint::PadicPrintMode::PADIC_TERSE);
 
