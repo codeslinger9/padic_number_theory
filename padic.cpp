@@ -27,28 +27,28 @@
 
 namespace flint 
 {
-
-    class padic_ctx 
+    
+    class PadicCtx 
     {
     private:
         padic_ctx_t _ctx;
 
     public:
-        padic_ctx() 
+        PadicCtx() 
         {
         }
     };
 
-    class fmpz {
+    class Fmpz {
     private:
-        std::shared_ptr<padic_ctx> _ctx;
+        std::shared_ptr<PadicCtx> _ctx;
 
     public:
-        fmpz(std::shared_ptr<padic_ctx> ctx) : _ctx(ctx) 
+        Fmpz(std::shared_ptr<PadicCtx> ctx) : _ctx(ctx) 
         {
         }
 
-        ~fmpz() 
+        ~Fmpz() 
         {
         }
     };
@@ -56,8 +56,8 @@ namespace flint
 
 int main() 
 {
-    auto ctx = std::make_shared<flint::padic_ctx>();
-    flint::fmpz fmpz(ctx);
+    auto ctx = std::make_shared<flint::PadicCtx>();
+    flint::Fmpz fmpz(ctx);
 
     return 0;
 }
