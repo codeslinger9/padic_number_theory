@@ -1,4 +1,4 @@
-# $`p`$-adic number theory
+# $`p`$-adic computational number theory
 ## why study $`p`$-adic numbers?
 * $`\mathbb{N} = \{1,2,...\}`$ is the most boring number system.
 * $`\mathbb{Z} = \{...,-2,-1,±0,+1,+2,...\}`$, the set of negative and positive numbers, has been boring ever since Leibniz. 
