@@ -328,42 +328,24 @@ int main()
     }
     
     // exp case 1
-    // {
-    //     std::cout << "exp(4) mod 2^10" << "\n";
+    {
+        std::cout << "exp(4) mod 2^10" << "\n";
 
-    //     flint::Fmpz p;
-    //     p.set( static_cast<flint::unsigned_long_t>(2) );
-    //     std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
+        flint::Fmpz p;
+        p.set( static_cast<flint::unsigned_long_t>(2) );
+        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
 
-    //     auto ctx = std::make_shared<flint::PadicContext>(p, 10, 25);
+        auto ctx = std::make_shared<flint::PadicContext>(p, 10, 25);
 
-    //     flint::PadicNumber x(ctx);
-    //     x.set( static_cast<flint::unsigned_long_t>(4) );
-    //     std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+        flint::PadicNumber x(ctx);
+        x.set( static_cast<flint::unsigned_long_t>(4) );
+        std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
 
-    //     auto y = flint::exp(x);
-    //     std::cout << "exp(x) = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-    //     std::cout << "\n";
-    // }
+        auto y = flint::exp(x);
+        std::cout << "exp(x) = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+        std::cout << "\n";
+    }
 
-    // exp
-    // {
-    //     std::cout << "exp(7380996) mod 5^20" << "\n";
-
-    //     flint::Fmpz p;
-    //     p.set( static_cast<flint::unsigned_long_t>(5) );
-    //     std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
-
-    //     auto ctx = std::make_shared<flint::PadicContext>(p, 10, 25);
-
-    //     flint::PadicNumber x(ctx);
-    //     x.set( static_cast<flint::unsigned_long_t>(7380996) );
-    //     std::cout << "x: " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-
-    //     auto y = flint::exp(x);
-    //     std::cout << "y: " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-    //     std::cout << "\n";
-    // }
 
     return 0;
 }
