@@ -30,21 +30,6 @@ namespace flint
         PADIC_VAL_UNIT = PADIC_VAL_UNIT
     };
 
-    class PadicCtx 
-    {
-    private:
-        padic_ctx_t _ctx;
-
-    public:
-        PadicCtx() 
-        {
-        }
-
-        void setPrintMode(PadicPrintMode mode) 
-        {
-            _ctx->mode = static_cast<padic_print_mode>(mode);
-        }
-    };
 
     class Base 
     {
@@ -68,16 +53,15 @@ namespace flint
     class Fmpz 
     {
     private:
-        std::shared_ptr<PadicCtx> _ctx;
         fmpz_t _val;
 
     public:
-        Fmpz(std::shared_ptr<PadicCtx> ctx) : _ctx(ctx) 
+        Fmpz() 
         {
             fmpz_init(_val);
         }
 
-        Fmpz(std::shared_ptr<PadicCtx> ctx, const unsigned_long_t limbs) : _ctx(ctx) 
+        Fmpz(const unsigned_long_t limbs) 
         {
             fmpz_init2(_val, limbs);
         }
@@ -103,12 +87,27 @@ namespace flint
             fmpz_clear(_val);
         }
 
-
-
         friend std::ostream& operator<<(std::ostream& os, const Fmpz& x)
         {
             os << x.toString(Base(10));
             return os;
+        }
+    };
+
+
+    class PadicCtx 
+    {
+    private:
+        padic_ctx_t _ctx;
+
+    public:
+        PadicCtx() 
+        {
+        }
+
+        void setPrintMode(PadicPrintMode mode) 
+        {
+            _ctx->mode = static_cast<padic_print_mode>(mode);
         }
     };
 }
@@ -116,11 +115,9 @@ namespace flint
 
 int main() 
 {
-    auto ctx = std::make_shared<flint::PadicCtx>();
-
-    flint::Fmpz tmp_a(ctx);
-    flint::Fmpz tmp_b(ctx, static_cast<flint::unsigned_long_t>(10));
-    flint::Fmpz tmp_c(ctx, static_cast<flint::unsigned_long_t>(1000000000));
+    flint::Fmpz tmp_a;
+    flint::Fmpz tmp_b(static_cast<flint::unsigned_long_t>(10));
+    flint::Fmpz tmp_c(static_cast<flint::unsigned_long_t>(1000000000));
 
     tmp_a.set( static_cast<flint::unsigned_long_t>(1023) );
     tmp_b.set( static_cast<flint::signed_long_t>(-1023) );
@@ -131,6 +128,7 @@ int main()
     std::cout << "tmp_a: " << tmp_a.toString(flint::Base(2)) << std::endl;
     std::cout << "tmp_b: " << tmp_b.toString(flint::Base(2)) << std::endl;
 
+    auto ctx = std::make_shared<flint::PadicCtx>();
     ctx->setPrintMode(flint::PadicPrintMode::PADIC_TERSE);
 
     return 0;
