@@ -13,5 +13,5 @@
 Enter non-Archimedean algebraic geometry:
 
 * $`\mathbb{Q_p}`$ is the field of $`p`$ -adic numbers, where $`p`$ is a prime number.
-* $`\overline{\mathbb{Q_p}}`$ is the algebraic closure of $`\mathbb{Q_p}`$
+* $`\overline{\mathbb{Q_p}}`$ is the algebraic closure of $`\mathbb{Q_p}`$.
 
