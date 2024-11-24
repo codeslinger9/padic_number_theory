@@ -119,11 +119,29 @@ namespace flint
         }
     };
 
-    class PadicNumber 
+    class PadicContext 
     {
     private:
         padic_ctx_t _ctx;
-        padic_t _val;
+
+    public:
+
+        //! @param p The prime number.
+        //! @param min The minimum number of pre-computed powers of p to store.
+        //! @param max The maximum number of pre-computed powers of p to store.
+        PadicContext(const Fmpz& p, signed_long_t min = 8, signed_long_t max = 12) 
+        {
+            if(!p.isPrime())
+            {
+                throw std::invalid_argument("The prime number must be a prime number.");
+            }
+            padic_ctx_init(_ctx, p.get(), min, max, PADIC_TERSE);
+        }
+
+        ~PadicContext() 
+        {
+            padic_ctx_clear(_ctx);
+        }
 
         //! @brief Set the print mode for the PadicNumber.
         //! @param mode The print mode to set.
@@ -132,19 +150,28 @@ namespace flint
            _ctx->mode = static_cast<padic_print_mode>(mode);
         }
 
-    public:
-        //! @brief Constructor.
-        //! @param p The prime number.
-        //! @param prec The precision to use (default is PADIC_DEFAULT_PREC = 20).
-        //! @param min The minimum number of pre-computed powers of p to store.
-        //! @param max The maximum number of pre-computed powers of p to store.
-        PadicNumber(const Fmpz& p, signed_long_t prec = PADIC_DEFAULT_PREC, signed_long_t min = 8, signed_long_t max = 12)
+        const padic_ctx_t& get() const
         {
-            if(!p.isPrime())
-            {
-                throw std::invalid_argument("The prime number must be a prime number.");
-            }
-            padic_ctx_init(_ctx, p.get(), min, max, PADIC_TERSE);
+            return _ctx;
+        }
+    };
+
+    class PadicNumber 
+    {
+    private:
+        std::shared_ptr<PadicContext> _ctx;
+        padic_t _val;
+
+
+    public:
+
+        //! @brief Default constructor.
+        //PadicNumber(const padic_t& val)
+
+        //! @brief Constructor.
+        //! @param prec The precision to use (default is PADIC_DEFAULT_PREC = 20).
+        PadicNumber(std::shared_ptr<PadicContext> ctx, signed_long_t prec = PADIC_DEFAULT_PREC) : _ctx(ctx)
+        {
             padic_init2(_val, prec);
         }
 
@@ -152,29 +179,28 @@ namespace flint
         //! @param val The value to set the padic_t to.
         void set(const unsigned_long_t val) 
         {
-            padic_set_ui(_val, val, _ctx);
+            padic_set_ui(_val, val, _ctx.get()->get());
         }
 
         //! @brief Set the value of the padic_t to a signed long.
         //! @param val The value to set the padic_t to.
         void set(const signed_long_t val) 
         {
-            padic_set_si(_val, val, _ctx);
+            padic_set_si(_val, val, _ctx.get()->get());
         }
         
         //! @brief Print the value of the fmpz_t to a string.
         //! @param b The base to print the value in.
         std::string toString(const PadicPrintMode& mode) 
         {
-            setPrintMode(mode);
-            char* str = padic_get_str(nullptr, _val, _ctx);
+            _ctx->setPrintMode(mode);
+            char* str = padic_get_str(nullptr, _val, _ctx.get()->get());
             return std::string(str);
         }
 
         ~PadicNumber() 
         {
             padic_clear(_val);
-            padic_ctx_clear(_ctx);
         }
 
 
@@ -185,30 +211,78 @@ namespace flint
         }
         
     };
+
+    // PadicNumber log(const PadicNumber& x) 
+    // {
+    //     PadicNumber y(x);
+    //     padic_log(y._val, x._val, y._ctx);
+    //     return y;
+    // }
 }
 
 
 int main() 
 {
-    flint::Fmpz tmp_a;
-    flint::Fmpz tmp_b(static_cast<flint::unsigned_long_t>(10));
-    flint::Fmpz tmp_c(static_cast<flint::unsigned_long_t>(1000000000));
+    {
+        flint::Fmpz tmp_a;
+        flint::Fmpz tmp_b(static_cast<flint::unsigned_long_t>(10));
+        flint::Fmpz tmp_c(static_cast<flint::unsigned_long_t>(1000000000));
 
-    tmp_a.set( static_cast<flint::unsigned_long_t>(1023) );
-    tmp_b.set( static_cast<flint::signed_long_t>(-1023) );
+        tmp_a.set( static_cast<flint::unsigned_long_t>(1023) );
+        tmp_b.set( static_cast<flint::signed_long_t>(-1023) );
 
-    std::cout << "tmp_a: " << tmp_a << " (0b" << tmp_a.toString(flint::Base(2)) << "), is prime: " << tmp_a.isPrime() << std::endl;
-    std::cout << "tmp_b: " << tmp_a << " (0b" << tmp_b.toString(flint::Base(2)) << "), is prime: " << tmp_b.isPrime() << std::endl;
+        std::cout << "tmp_a: " << tmp_a << " (0b" << tmp_a.toString(flint::Base(2)) << "), is prime: " << tmp_a.isPrime() << std::endl;
+        std::cout << "tmp_b: " << tmp_a << " (0b" << tmp_b.toString(flint::Base(2)) << "), is prime: " << tmp_b.isPrime() << std::endl;
+        std::cout << "\n";
+    }
+
 
     // case 1 (x ≡ 127 mod 7^10)
-    flint::Fmpz p;
-    p.set( static_cast<flint::unsigned_long_t>(7) );
-    std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << std::endl;
+    {
+        std::cout << "x ≡ 127 mod 7^10" << std::endl;
 
-    flint::PadicNumber padic(p, flint::signed_long_t(10));
-    padic.set( static_cast<flint::unsigned_long_t>(127) );
-    std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << std::endl;
+        flint::Fmpz p;
+        p.set( static_cast<flint::unsigned_long_t>(7) );
+        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << std::endl;
 
+        auto ctx = std::make_shared<flint::PadicContext>(p);
+
+        flint::PadicNumber padic(ctx, flint::signed_long_t(10));
+        padic.set( static_cast<flint::unsigned_long_t>(127) );
+        std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << std::endl;
+        std::cout << "\n";
+    }
+
+    // case 2 (x ≡ 1057 mod 2^10)
+    {   
+        std::cout << "x ≡ 1057 mod 2^10" << std::endl;
+
+        flint::Fmpz p;
+        p.set( static_cast<flint::unsigned_long_t>(2) );
+        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << std::endl;
+
+        auto ctx = std::make_shared<flint::PadicContext>(p);
+
+        flint::PadicNumber padic(ctx, flint::signed_long_t(10));
+        padic.set( static_cast<flint::unsigned_long_t>(1057) );
+        std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << std::endl;
+        std::cout << "\n";
+    }
+
+    // case 3 (x ≡ -127 mod 3^10)
+    {
+        std::cout << "x ≡ -127 mod 3^10" << std::endl;
+
+        flint::Fmpz p;
+        p.set( static_cast<flint::unsigned_long_t>(3) );
+        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << std::endl;
+
+        auto ctx = std::make_shared<flint::PadicContext>(p);
+
+        flint::PadicNumber padic(ctx, flint::signed_long_t(10));
+        padic.set( static_cast<flint::signed_long_t>(-127) );
+        std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << std::endl;
+    }
 
     return 0;
 }
