@@ -123,16 +123,31 @@ namespace flint
     public:
         //! @brief Constructor.
         //! @param p The prime number.
+        //! @param prec The precision to use (default is PADIC_DEFAULT_PREC = 20).
         //! @param min The minimum number of pre-computed powers of p to store.
         //! @param max The maximum number of pre-computed powers of p to store.
-        //! @param prec The precision to use (default is PADIC_DEFAULT_PREC = 20).
-        PadicNumber(const Fmpz& p, signed_long_t min = 8, signed_long_t max = 12, signed_long_t prec = PADIC_DEFAULT_PREC)
+        PadicNumber(const Fmpz& p, signed_long_t prec = PADIC_DEFAULT_PREC, signed_long_t min = 8, signed_long_t max = 12)
         {
             if(!p.isPrime())
             {
                 throw std::invalid_argument("The prime number must be a prime number.");
             }
+
             padic_init2(_val, prec);
+        }
+
+        //! @brief Set the value of the padic_t to an unsigned long.
+        //! @param val The value to set the padic_t to.
+        void set(const unsigned_long_t val) 
+        {
+            padic_set_ui(_val, val, _ctx);
+        }
+
+        //! @brief Set the value of the padic_t to a signed long.
+        //! @param val The value to set the padic_t to.
+        void set(const signed_long_t val) 
+        {
+            padic_set_si(_val, val, _ctx);
         }
 
         //! @brief Set the print mode for the PadicNumber.
@@ -163,11 +178,14 @@ int main()
     std::cout << "tmp_a: " << tmp_a << " (0b" << tmp_a.toString(flint::Base(2)) << "), is prime: " << tmp_a.isPrime() << std::endl;
     std::cout << "tmp_b: " << tmp_a << " (0b" << tmp_b.toString(flint::Base(2)) << "), is prime: " << tmp_b.isPrime() << std::endl;
 
+    // case 1 (x ≡ 127 mod 7^10)
     flint::Fmpz p;
     p.set( static_cast<flint::unsigned_long_t>(7) );
     std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << std::endl;
 
-    flint::PadicNumber padic(p);
+    flint::PadicNumber padic(p, flint::signed_long_t(10));
+    padic.set( static_cast<flint::unsigned_long_t>(127) );
+
     padic.setPrintMode(flint::PadicPrintMode::TERSE);
 
     return 0;
