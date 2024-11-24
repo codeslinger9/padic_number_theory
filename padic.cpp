@@ -10,6 +10,7 @@
 #include <flint/flint.h>
 #include <flint/fmpz.h>
 #include <flint/fmpz_mod_poly.h>
+#include <flint/aprcl.h>
 #include <flint/padic.h>
 
 #include <iostream>
@@ -25,9 +26,9 @@ namespace flint
 
     enum class PadicPrintMode : uint8_t
     {
-        PADIC_TERSE = PADIC_TERSE,
-        PADIC_SERIES = PADIC_SERIES,
-        PADIC_VAL_UNIT = PADIC_VAL_UNIT
+        TERSE = PADIC_TERSE,
+        SERIES = PADIC_SERIES,
+        VAL_UNIT = PADIC_VAL_UNIT
     };
 
 
@@ -82,6 +83,11 @@ namespace flint
             return std::string(str);
         }
 
+        bool isPrime() const 
+        {
+            return aprcl_is_prime(_val);
+        }
+
         ~Fmpz() 
         {
             fmpz_clear(_val);
@@ -94,20 +100,26 @@ namespace flint
         }
     };
 
-
-    class PadicCtx 
+    class PadicNumber 
     {
     private:
         padic_ctx_t _ctx;
 
     public:
-        PadicCtx() 
+        PadicNumber(const Fmpz& p, signed_long_t min = 8, signed_long_t max = 12) 
         {
+            //padic_init(_val);
         }
 
         void setPrintMode(PadicPrintMode mode) 
         {
-            _ctx->mode = static_cast<padic_print_mode>(mode);
+           _ctx->mode = static_cast<padic_print_mode>(mode);
+        }
+
+        ~PadicNumber() 
+        {
+            //padic_clear(x);
+            padic_ctx_clear(_ctx);
         }
     };
 }
@@ -122,14 +134,15 @@ int main()
     tmp_a.set( static_cast<flint::unsigned_long_t>(1023) );
     tmp_b.set( static_cast<flint::signed_long_t>(-1023) );
 
-    std::cout << "tmp_a: " << tmp_a << std::endl;
-    std::cout << "tmp_b: " << tmp_b << std::endl;
+    std::cout << "tmp_a: " << tmp_a << " (0b" << tmp_a.toString(flint::Base(2)) << "), is prime: " << tmp_a.isPrime() << std::endl;
+    std::cout << "tmp_b: " << tmp_a << " (0b" << tmp_b.toString(flint::Base(2)) << "), is prime: " << tmp_b.isPrime() << std::endl;
 
-    std::cout << "tmp_a: " << tmp_a.toString(flint::Base(2)) << std::endl;
-    std::cout << "tmp_b: " << tmp_b.toString(flint::Base(2)) << std::endl;
+    flint::Fmpz p;
+    p.set( static_cast<flint::unsigned_long_t>(7) );
+    std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << std::endl;
 
-    auto ctx = std::make_shared<flint::PadicCtx>();
-    ctx->setPrintMode(flint::PadicPrintMode::PADIC_TERSE);
+    flint::PadicNumber padic(p);
+    padic.setPrintMode(flint::PadicPrintMode::TERSE);
 
     return 0;
 }
