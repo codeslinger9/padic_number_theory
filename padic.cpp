@@ -16,7 +16,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <cassert>
 
 
 namespace flint 
@@ -39,8 +38,10 @@ namespace flint
     public:
         Base(int b) : _b(b) 
         {
-            assert(b >= 2);
-            assert(b <= 62);
+            if(b < 2 || b > 62)
+            {
+                throw std::invalid_argument("Base must be between 2 and 62.");
+            }
         }
 
         // cast to int
@@ -51,38 +52,51 @@ namespace flint
 
     };
 
+    //! @brief Wrapper class for the FLINT fmpz_t type.
     class Fmpz 
     {
     private:
         fmpz_t _val;
 
     public:
+        //! @brief Default constructor.
+        //! @details Initializes the fmpz_t value to zero.
         Fmpz() 
         {
             fmpz_init(_val);
         }
 
+        //! @brief Constructor with pre-allocated limbs (memory).
+        //! @param limbs The number of limbs to allocate.
         Fmpz(const unsigned_long_t limbs) 
         {
             fmpz_init2(_val, limbs);
         }
 
+        //! @brief Set the value of the fmpz_t to an unsigned long.
+        //! @param val The value to set the fmpz_t to.
         void set(const unsigned_long_t val) 
         {
             fmpz_set_ui(_val, val);
         }
 
+        //! @brief Set the value of the fmpz_t to a signed long.
+        //! @param val The value to set the fmpz_t to.
         void set(const signed_long_t val) 
         {
             fmpz_set_si(_val, val);
         }
 
+        //! @brief Print the value of the fmpz_t to a string.
+        //! @param b The base to print the value in.
         std::string toString(const Base b) const
         {
             char* str = fmpz_get_str(nullptr, static_cast<int>(b), _val);
             return std::string(str);
         }
 
+        //! @brief Check if the value of the fmpz_t is prime.
+        //! @return True if the value is prime, false otherwise.
         bool isPrime() const 
         {
             return aprcl_is_prime(_val);
@@ -104,13 +118,25 @@ namespace flint
     {
     private:
         padic_ctx_t _ctx;
+        padic_t _val;
 
     public:
-        PadicNumber(const Fmpz& p, signed_long_t min = 8, signed_long_t max = 12) 
+        //! @brief Constructor.
+        //! @param p The prime number.
+        //! @param min The minimum number of pre-computed powers of p to store.
+        //! @param max The maximum number of pre-computed powers of p to store.
+        //! @param prec The precision to use (default is PADIC_DEFAULT_PREC = 20).
+        PadicNumber(const Fmpz& p, signed_long_t min = 8, signed_long_t max = 12, signed_long_t prec = PADIC_DEFAULT_PREC)
         {
-            //padic_init(_val);
+            if(!p.isPrime())
+            {
+                throw std::invalid_argument("The prime number must be a prime number.");
+            }
+            padic_init2(_val, prec);
         }
 
+        //! @brief Set the print mode for the PadicNumber.
+        //! @param mode The print mode to set.
         void setPrintMode(PadicPrintMode mode) 
         {
            _ctx->mode = static_cast<padic_print_mode>(mode);
@@ -118,7 +144,7 @@ namespace flint
 
         ~PadicNumber() 
         {
-            //padic_clear(x);
+            padic_clear(_val);
             padic_ctx_clear(_ctx);
         }
     };
