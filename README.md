@@ -8,7 +8,7 @@
 * $`\mathbb{H}`$ = the set of quaternions, has been boring ever since 3D video game programmers discovered "gimbal lock."
 * the axioms of geometry have been boring ever since Bolyai threw Euclid's parallel postulate out the window.
 
-## p-adic numbers
+## $`p`$ -adic numbers
 
 Enter non-Archimedean algebraic geometry:
 
