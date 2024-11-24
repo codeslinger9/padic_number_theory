@@ -18,9 +18,9 @@ message(STATUS "LINK_LIBRARIES      : ${LINK_LIBRARIES}")
 set(CMAKE_VERBOSE_MAKEFILE 1)
 
 
-add_executable(test main.cpp)
+add_executable(test test.cpp)
+target_link_libraries(test flint)
+
 add_executable(padic padic.cpp)
-
-
 target_link_libraries(padic flint)
 set_property(TARGET padic PROPERTY CXX_STANDARD 23)

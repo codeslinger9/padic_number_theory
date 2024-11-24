@@ -120,6 +120,13 @@ namespace flint
         padic_ctx_t _ctx;
         padic_t _val;
 
+        //! @brief Set the print mode for the PadicNumber.
+        //! @param mode The print mode to set.
+        void setPrintMode(PadicPrintMode mode) 
+        {
+           _ctx->mode = static_cast<padic_print_mode>(mode);
+        }
+
     public:
         //! @brief Constructor.
         //! @param p The prime number.
@@ -149,12 +156,14 @@ namespace flint
         {
             padic_set_si(_val, val, _ctx);
         }
-
-        //! @brief Set the print mode for the PadicNumber.
-        //! @param mode The print mode to set.
-        void setPrintMode(PadicPrintMode mode) 
+        
+        //! @brief Print the value of the fmpz_t to a string.
+        //! @param b The base to print the value in.
+        std::string toString(const PadicPrintMode& mode) 
         {
-           _ctx->mode = static_cast<padic_print_mode>(mode);
+            setPrintMode(mode);
+            char* str = padic_get_str(nullptr, _val, _ctx);
+            return std::string(str);
         }
 
         ~PadicNumber() 
@@ -162,6 +171,14 @@ namespace flint
             padic_clear(_val);
             padic_ctx_clear(_ctx);
         }
+
+
+        friend std::ostream& operator<<(std::ostream& os, PadicNumber& x)
+        {
+            os << x.toString(PadicPrintMode::TERSE);
+            return os;
+        }
+        
     };
 }
 
@@ -186,7 +203,7 @@ int main()
     flint::PadicNumber padic(p, flint::signed_long_t(10));
     padic.set( static_cast<flint::unsigned_long_t>(127) );
 
-    padic.setPrintMode(flint::PadicPrintMode::TERSE);
+    std::cout << "padic: " << padic << std::endl;
 
     return 0;
 }
