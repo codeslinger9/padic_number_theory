@@ -36,7 +36,7 @@ namespace flint
     private:
         int _b;
     public:
-        Base(int b) : _b(b) 
+        explicit Base(int b) : _b(b) 
         {
             if(b < 2 || b > 62)
             {
@@ -45,7 +45,7 @@ namespace flint
         }
 
         // cast to int
-        operator int() const 
+        explicit operator int() const 
         {
             return _b;
         }
@@ -68,7 +68,7 @@ namespace flint
 
         //! @brief Constructor with pre-allocated limbs (memory).
         //! @param limbs The number of limbs to allocate.
-        Fmpz(const unsigned_long_t limbs) 
+        explicit Fmpz(const unsigned_long_t limbs) 
         {
             fmpz_init2(_val, limbs);
         }
@@ -129,7 +129,7 @@ namespace flint
         //! @param p The prime number.
         //! @param min The minimum number of pre-computed powers of p to store.
         //! @param max The maximum number of pre-computed powers of p to store.
-        PadicContext(const Fmpz& p, signed_long_t min = 8, signed_long_t max = 12) 
+        explicit PadicContext(const Fmpz& p, signed_long_t min = 8, signed_long_t max = 12) 
         {
             if(!p.isPrime())
             {
@@ -176,9 +176,14 @@ namespace flint
 
         //! @brief Constructor.
         //! @param prec The precision to use (default is PADIC_DEFAULT_PREC = 20).
-        PadicNumber(std::shared_ptr<PadicContext> ctx, signed_long_t prec = PADIC_DEFAULT_PREC) : _ctx(ctx)
+        explicit PadicNumber(std::shared_ptr<PadicContext> ctx, signed_long_t prec = PADIC_DEFAULT_PREC) : _ctx(ctx)
         {
             padic_init2(_val, prec);
+        }
+
+        ~PadicNumber() 
+        {
+            padic_clear(_val);
         }
 
         //! @brief Set the value of the padic_t to an unsigned long.
@@ -204,11 +209,8 @@ namespace flint
             return std::string(str);
         }
 
-        ~PadicNumber() 
-        {
-            padic_clear(_val);
-        }
 
+        friend PadicNumber operator + (const PadicNumber& lhs, const PadicNumber& rhs); 
 
         friend PadicNumber log(const PadicNumber& x, signed_long_t prec);
         friend PadicNumber exp(const PadicNumber& x, signed_long_t prec);
@@ -219,6 +221,13 @@ namespace flint
             return os;
         }
     };
+
+    PadicNumber operator + (const PadicNumber& lhs, const PadicNumber& rhs) 
+    {
+        PadicNumber y(lhs.getContext());
+        padic_add(y._val, lhs._val, rhs._val, lhs._getContext());
+        return y;
+    }
 
     PadicNumber log(const PadicNumber& x, signed_long_t prec = PADIC_DEFAULT_PREC) 
     {
@@ -343,6 +352,29 @@ int main()
 
         auto y = flint::exp(x);
         std::cout << "exp(x) = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+        std::cout << "\n";
+    }
+
+    // addition
+    {
+        std::cout << "x + y" << "\n";
+
+        flint::Fmpz p;
+        p.set( static_cast<flint::unsigned_long_t>(2) );
+        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
+
+        auto ctx = std::make_shared<flint::PadicContext>(p, 10, 25);
+
+        flint::PadicNumber x(ctx);
+        x.set( static_cast<flint::unsigned_long_t>(4) );
+        std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+
+        flint::PadicNumber y(ctx);
+        y.set( static_cast<flint::unsigned_long_t>(5) );
+        std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+
+        auto z = x + y;
+        std::cout << "x + y = " << z << " (" << z.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
         std::cout << "\n";
     }
 
