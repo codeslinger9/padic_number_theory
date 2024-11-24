@@ -162,11 +162,17 @@ namespace flint
         std::shared_ptr<PadicContext> _ctx;
         padic_t _val;
 
+        const padic_ctx_t& _getContext() const
+        {
+            return _ctx.get()->get();
+        }
+
+        std::shared_ptr<PadicContext> getContext() const
+        {
+            return _ctx;
+        }
 
     public:
-
-        //! @brief Default constructor.
-        //PadicNumber(const padic_t& val)
 
         //! @brief Constructor.
         //! @param prec The precision to use (default is PADIC_DEFAULT_PREC = 20).
@@ -179,14 +185,14 @@ namespace flint
         //! @param val The value to set the padic_t to.
         void set(const unsigned_long_t val) 
         {
-            padic_set_ui(_val, val, _ctx.get()->get());
+            padic_set_ui(_val, val, _getContext());
         }
 
         //! @brief Set the value of the padic_t to a signed long.
         //! @param val The value to set the padic_t to.
         void set(const signed_long_t val) 
         {
-            padic_set_si(_val, val, _ctx.get()->get());
+            padic_set_si(_val, val, _getContext());
         }
         
         //! @brief Print the value of the fmpz_t to a string.
@@ -194,7 +200,7 @@ namespace flint
         std::string toString(const PadicPrintMode& mode) 
         {
             _ctx->setPrintMode(mode);
-            char* str = padic_get_str(nullptr, _val, _ctx.get()->get());
+            char* str = padic_get_str(nullptr, _val, _getContext());
             return std::string(str);
         }
 
@@ -204,20 +210,21 @@ namespace flint
         }
 
 
+        friend PadicNumber log(const PadicNumber& x, signed_long_t prec);
+
         friend std::ostream& operator<<(std::ostream& os, PadicNumber& x)
         {
             os << x.toString(PadicPrintMode::TERSE);
             return os;
         }
-        
     };
 
-    // PadicNumber log(const PadicNumber& x) 
-    // {
-    //     PadicNumber y(x);
-    //     padic_log(y._val, x._val, y._ctx);
-    //     return y;
-    // }
+    PadicNumber log(const PadicNumber& x, signed_long_t prec = PADIC_DEFAULT_PREC) 
+    {
+        PadicNumber y(x.getContext(), prec);
+        padic_log(y._val, x._val, x._getContext());
+        return y;
+    }
 }
 
 
@@ -231,57 +238,77 @@ int main()
         tmp_a.set( static_cast<flint::unsigned_long_t>(1023) );
         tmp_b.set( static_cast<flint::signed_long_t>(-1023) );
 
-        std::cout << "tmp_a: " << tmp_a << " (0b" << tmp_a.toString(flint::Base(2)) << "), is prime: " << tmp_a.isPrime() << std::endl;
-        std::cout << "tmp_b: " << tmp_a << " (0b" << tmp_b.toString(flint::Base(2)) << "), is prime: " << tmp_b.isPrime() << std::endl;
+        std::cout << "tmp_a: " << tmp_a << " (0b" << tmp_a.toString(flint::Base(2)) << "), is prime: " << tmp_a.isPrime() << "\n";
+        std::cout << "tmp_b: " << tmp_a << " (0b" << tmp_b.toString(flint::Base(2)) << "), is prime: " << tmp_b.isPrime() << "\n";
         std::cout << "\n";
     }
 
 
     // case 1 (x ≡ 127 mod 7^10)
     {
-        std::cout << "x ≡ 127 mod 7^10" << std::endl;
+        std::cout << "x ≡ 127 mod 7^10" << "\n";
 
         flint::Fmpz p;
         p.set( static_cast<flint::unsigned_long_t>(7) );
-        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << std::endl;
+        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
 
         auto ctx = std::make_shared<flint::PadicContext>(p);
 
         flint::PadicNumber padic(ctx, flint::signed_long_t(10));
         padic.set( static_cast<flint::unsigned_long_t>(127) );
-        std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << std::endl;
+        std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
         std::cout << "\n";
     }
 
     // case 2 (x ≡ 1057 mod 2^10)
     {   
-        std::cout << "x ≡ 1057 mod 2^10" << std::endl;
+        std::cout << "x ≡ 1057 mod 2^10" << "\n";
 
         flint::Fmpz p;
         p.set( static_cast<flint::unsigned_long_t>(2) );
-        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << std::endl;
+        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
 
         auto ctx = std::make_shared<flint::PadicContext>(p);
 
         flint::PadicNumber padic(ctx, flint::signed_long_t(10));
         padic.set( static_cast<flint::unsigned_long_t>(1057) );
-        std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << std::endl;
+        std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
         std::cout << "\n";
     }
 
     // case 3 (x ≡ -127 mod 3^10)
     {
-        std::cout << "x ≡ -127 mod 3^10" << std::endl;
+        std::cout << "x ≡ -127 mod 3^10" << "\n";
 
         flint::Fmpz p;
         p.set( static_cast<flint::unsigned_long_t>(3) );
-        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << std::endl;
+        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
 
         auto ctx = std::make_shared<flint::PadicContext>(p);
 
         flint::PadicNumber padic(ctx, flint::signed_long_t(10));
         padic.set( static_cast<flint::signed_long_t>(-127) );
-        std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << std::endl;
+        std::cout << "padic: " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+        std::cout << "\n";
+    }
+
+    // log
+    {
+        std::cout << "log(7380996) mod 5^20" << "\n";
+
+        flint::Fmpz p;
+        p.set( static_cast<flint::unsigned_long_t>(5) );
+        std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
+
+        auto ctx = std::make_shared<flint::PadicContext>(p, 10, 25);
+
+        flint::PadicNumber x(ctx);
+        x.set( static_cast<flint::unsigned_long_t>(7380996) );
+        std::cout << "x: " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+
+        auto y = flint::log(x);
+        std::cout << "y: " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+        std::cout << "\n";
     }
 
     return 0;
