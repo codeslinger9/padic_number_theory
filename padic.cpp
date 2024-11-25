@@ -245,25 +245,60 @@ void test_add()
         prime.set(p);
         if (prime.isPrime())
         {
-            std::cout << "p: " << prime << " (0b" << prime.toString(flint::Base(2)) << ")" << "\n";
-
-            auto ctx = std::make_shared<flint::PadicContext>(prime, 0, 1);
+            auto ctx = std::make_shared<flint::PadicContext>(prime);
 
             flint::PadicNumber x(ctx);
             x.set(static_cast<flint::unsigned_long_t>(x_int));
-            std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
 
             flint::PadicNumber y(ctx);
             y.set(static_cast<flint::unsigned_long_t>(1));
-            std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
 
             auto z = x + y;
+            
+            std::cout << "p: " << prime << " (0b" << prime.toString(flint::Base(2)) << ")" << "\n";
+            std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+            std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
             std::cout << "x + y = " << z << " (" << z.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
             std::cout << "\n";
         }
     }
 }
 
+void test_sub()
+{
+#define P 7ull
+#define X 1057ull
+#define Y 1ull
+#define PREC 10ull
+
+    flint::Fmpz p;
+    p.set(static_cast<flint::unsigned_long_t>(P));
+
+    auto ctx = std::make_shared<flint::PadicContext>(p);
+
+    flint::PadicNumber x(ctx, flint::signed_long_t(PREC));
+    x.set(static_cast<flint::unsigned_long_t>(X));
+
+    flint::PadicNumber y(ctx, flint::signed_long_t(PREC));
+    y.set(static_cast<flint::unsigned_long_t>(Y));
+
+    auto z = x - y;
+
+    const std::string x_str_terse = x.toString(flint::PadicPrintMode::TERSE);
+    const std::string x_str_series = x.toString(flint::PadicPrintMode::SERIES);
+
+    const std::string y_str_terse = y.toString(flint::PadicPrintMode::TERSE);
+    const std::string y_str_series = y.toString(flint::PadicPrintMode::SERIES);
+
+    const std::string z_str_terse = z.toString(flint::PadicPrintMode::TERSE);
+    const std::string z_str_series = z.toString(flint::PadicPrintMode::SERIES);
+
+    std::cout << "x - y" << "\n";
+    std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+    std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+    std::cout << "x - y = " << z << " (" << z.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+    std::cout << "\n";
+}
 
 TEST_LIST = {
    { "test_case_1", test_case_1 },
@@ -272,6 +307,6 @@ TEST_LIST = {
    { "test_logarithm", test_logarithm },
    { "test_exp", test_exp },
    { "test_add", test_add },
-
+   { "test_sub", test_sub },
    { NULL, NULL }     /* zeroed record marking the end of the list */
 };
