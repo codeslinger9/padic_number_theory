@@ -15,6 +15,7 @@
 #include <string>
 
 
+#include "exprtk.hpp"
 #include "acutest.h"
 #include <iostream>
 
@@ -257,19 +258,29 @@ namespace flint
 
 void test_case_1() 
 {
+#define P 7
+#define X 127
+#define PREC 10
+
     flint::Fmpz p;
-    p.set( static_cast<flint::unsigned_long_t>(7) );
+    p.set( static_cast<flint::unsigned_long_t>(P) );
 
     auto ctx = std::make_shared<flint::PadicContext>(p);
 
-    flint::PadicNumber padic(ctx, flint::signed_long_t(10));
-    padic.set( static_cast<flint::unsigned_long_t>(127) );
+    flint::PadicNumber padic(ctx, flint::signed_long_t(PREC));
+    padic.set( static_cast<flint::unsigned_long_t>(X) );
 
     const std::string x_str_terse = padic.toString(flint::PadicPrintMode::TERSE);
     const std::string x_str_series = padic.toString(flint::PadicPrintMode::SERIES);
 
     TEST_CHECK(x_str_terse == "127");
     TEST_CHECK(x_str_series == "1 + 4*7^1 + 2*7^2");
+
+    exprtk::expression<double> expr;
+    exprtk::parser<double> parser;
+    parser.compile(x_str_series, expr);
+    TEST_CHECK(expr.value() == X);
+
 
     std::cout << "x ≡ 127 mod 7^10" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
