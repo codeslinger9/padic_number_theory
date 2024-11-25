@@ -278,8 +278,14 @@ void test_case_1()
 
     exprtk::expression<double> expr;
     exprtk::parser<double> parser;
+
+    parser.compile(x_str_terse, expr);
+    auto lhs = expr.value();
+
     parser.compile(x_str_series, expr);
-    TEST_CHECK(expr.value() == X);
+    auto rhs = expr.value();
+    
+    TEST_CHECK(lhs == rhs);
 
 
     std::cout << "x ≡ 127 mod 7^10" << "\n";
@@ -290,19 +296,31 @@ void test_case_1()
 
 void test_case_2() 
 {
+#define P 2
+#define X 1057
+#define PREC 10
+
     flint::Fmpz p;
-    p.set(static_cast<flint::unsigned_long_t>(2));
+    p.set(static_cast<flint::unsigned_long_t>(P));
 
     auto ctx = std::make_shared<flint::PadicContext>(p);
 
-    flint::PadicNumber padic(ctx, flint::signed_long_t(10));
-    padic.set(static_cast<flint::unsigned_long_t>(1057));
+    flint::PadicNumber padic(ctx, flint::signed_long_t(PREC));
+    padic.set(static_cast<flint::unsigned_long_t>(X));
 
     const std::string x_str_terse = padic.toString(flint::PadicPrintMode::TERSE);
     const std::string x_str_series = padic.toString(flint::PadicPrintMode::SERIES);
 
-    TEST_CHECK(x_str_terse == "33");    
-    TEST_CHECK(x_str_series == "1 + 1*2^5");
+    exprtk::expression<double> expr;
+    exprtk::parser<double> parser;
+
+    parser.compile(x_str_terse, expr);
+    auto lhs = expr.value();
+
+    parser.compile(x_str_series, expr);
+    auto rhs = expr.value();
+    
+    TEST_CHECK(lhs == rhs);
 
     std::cout << "x ≡ 1057 mod 2^10" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
@@ -312,13 +330,17 @@ void test_case_2()
 
 void test_case_3() 
 {
+#define P 3
+#define X -127
+#define PREC 10
+
     flint::Fmpz p;
-    p.set(static_cast<flint::unsigned_long_t>(3));
+    p.set(static_cast<flint::unsigned_long_t>(P));
 
     auto ctx = std::make_shared<flint::PadicContext>(p);
 
-    flint::PadicNumber padic(ctx, flint::signed_long_t(10));
-    padic.set(static_cast<flint::signed_long_t>(-127));
+    flint::PadicNumber padic(ctx, flint::signed_long_t(PREC));
+    padic.set(static_cast<flint::signed_long_t>(X));
 
     const std::string x_str_terse = padic.toString(flint::PadicPrintMode::TERSE);
     const std::string x_str_series = padic.toString(flint::PadicPrintMode::SERIES);
@@ -326,6 +348,16 @@ void test_case_3()
     TEST_CHECK(x_str_terse == "58922");    
     TEST_CHECK(x_str_series == "2 + 2*3^1 + 1*3^3 + 1*3^4 + 2*3^5 + 2*3^6 + 2*3^7 + 2*3^8 + 2*3^9");
 
+    exprtk::expression<double> expr;
+    exprtk::parser<double> parser;
+
+    parser.compile(x_str_terse, expr);
+    auto lhs = expr.value();
+
+    parser.compile(x_str_series, expr);
+    auto rhs = expr.value();
+    
+    TEST_CHECK(lhs == rhs);
 
     std::cout << "x ≡ -127 mod 3^10" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
@@ -336,14 +368,16 @@ void test_case_3()
 
 void test_logarithm() 
 {
+#define P 5
+#define X 7380996
 
     flint::Fmpz p;
-    p.set(static_cast<flint::unsigned_long_t>(5));
+    p.set(static_cast<flint::unsigned_long_t>(P));
 
     auto ctx = std::make_shared<flint::PadicContext>(p, 10, 25);
 
     flint::PadicNumber x(ctx);
-    x.set(static_cast<flint::unsigned_long_t>(7380996));
+    x.set(static_cast<flint::unsigned_long_t>(X));
 
     auto y = flint::log(x);
 
@@ -355,6 +389,17 @@ void test_logarithm()
 
     TEST_CHECK(x_str_series == "1 + 4*5^1 + 4*5^2 + 2*5^3 + 4*5^4 + 1*5^5 + 2*5^6 + 4*5^7 + 3*5^8 + 3*5^9");
     TEST_CHECK(y_str_series == "4*5^1 + 1*5^2 + 3*5^3 + 1*5^4 + 1*5^5 + 4*5^6 + 1*5^7 + 1*5^8 + 2*5^9 + 1*5^10 + 3*5^11 + 4*5^12 + 4*5^13 + 1*5^14 + 2*5^15 + 4*5^18 + 2*5^19");
+
+    exprtk::expression<double> expr;
+    exprtk::parser<double> parser;
+
+    parser.compile(y_str_terse, expr);
+    auto lhs = expr.value();
+
+    parser.compile(y_str_series, expr);
+    auto rhs = expr.value();
+    
+    TEST_CHECK(lhs == rhs);
 
 
     std::cout << "log(7380996) mod 5^20" << "\n";
@@ -390,6 +435,18 @@ void test_exp()
     TEST_CHECK(y_str_series == "1 + 1*2^2 + 1*2^3 + 1*2^6 + 1*2^8 + 1*2^14 + 1*2^17 + 1*2^18 + 1*2^19");
 
 
+    exprtk::expression<double> expr;
+    exprtk::parser<double> parser;
+
+    parser.compile(y_str_terse, expr);
+    auto lhs = expr.value();
+
+    parser.compile(y_str_series, expr);
+    auto rhs = expr.value();
+    
+    TEST_CHECK(lhs == rhs);
+
+    
     std::cout << "exp(4) mod 2^10" << "\n";
     std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
