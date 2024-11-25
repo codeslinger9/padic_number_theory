@@ -446,7 +446,7 @@ void test_exp()
     
     TEST_CHECK(lhs == rhs);
 
-    
+
     std::cout << "exp(4) mod 2^10" << "\n";
     std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
@@ -454,168 +454,44 @@ void test_exp()
     std::cout << "\n";
 }
 
+void test_add() 
+{
+    std::cout << "x + y" << "\n";
 
-// void test_1() 
-// {
-    // {
-    //     flint::Fmpz tmp_a;
-    //     flint::Fmpz tmp_b(static_cast<flint::unsigned_long_t>(10));
-    //     flint::Fmpz tmp_c(static_cast<flint::unsigned_long_t>(1000000000));
+    for (flint::unsigned_long_t p = 2; p < 100; p++)
+    {
 
-    //     tmp_a.set( static_cast<flint::unsigned_long_t>(1023) );
-    //     tmp_b.set( static_cast<flint::signed_long_t>(-1023) );
+        flint::Fmpz prime;
+        prime.set(p);
+        if (prime.isPrime())
+        {
+            std::cout << "p: " << prime << " (0b" << prime.toString(flint::Base(2)) << ")" << "\n";
 
-    //     std::cout << "tmp_a: " << tmp_a << " (0b" << tmp_a.toString(flint::Base(2)) << "), is prime: " << tmp_a.isPrime() << "\n";
-    //     std::cout << "tmp_b: " << tmp_a << " (0b" << tmp_b.toString(flint::Base(2)) << "), is prime: " << tmp_b.isPrime() << "\n";
-    //     std::cout << "\n";
-    // }
+            auto ctx = std::make_shared<flint::PadicContext>(prime, 0, 1);
 
-    // {
-    //     auto x = static_cast<flint::unsigned_long_t>(2*3*5*7*11*13*17*19*23*29*31*37*41*43*47*53*59*61*67*71*73*79*83*89*97);
-        
-    //     for(flint::unsigned_long_t p_i = 2; p_i < 100; p_i++)
-    //     {
-    //         flint::Fmpz p;
-    //         p.set( static_cast<flint::unsigned_long_t>(p_i) );
-    //         if(p.isPrime())
-    //         {
-    //             std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
+            flint::PadicNumber x(ctx);
+            x.set(static_cast<flint::unsigned_long_t>(2 * 3 * 5 * 7 * 11 * 13 * 17 * 19));
+            std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
 
-    //             auto ctx = std::make_shared<flint::PadicContext>(p);
+            flint::PadicNumber y(ctx);
+            y.set(static_cast<flint::unsigned_long_t>(5));
+            std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
 
-    //             flint::PadicNumber padic(ctx, flint::signed_long_t(10));
-    //             padic.set( static_cast<flint::unsigned_long_t>(x) );
-    //             std::cout << "x = " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-    //             std::cout << "\n";
-    //         }
-    //     }
-    // }
+            auto z = x + y;
+            std::cout << "x + y = " << z << " (" << z.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+            std::cout << "\n";
+        }
+    }
+}
 
-    // // case 1 (x ≡ 127 mod 7^10)
-    // {
-    //     std::cout << "x ≡ 127 mod 7^10" << "\n";
-
-    //     flint::Fmpz p;
-    //     p.set( static_cast<flint::unsigned_long_t>(7) );
-    //     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
-
-    //     auto ctx = std::make_shared<flint::PadicContext>(p);
-
-    //     flint::PadicNumber padic(ctx, flint::signed_long_t(10));
-    //     padic.set( static_cast<flint::unsigned_long_t>(127) );
-    //     std::cout << "x = " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-    //     std::cout << "\n";
-    // }
-
-    // // case 2 (x ≡ 1057 mod 2^10)
-    // {   
-    //     std::cout << "x ≡ 1057 mod 2^10" << "\n";
-
-    //     flint::Fmpz p;
-    //     p.set( static_cast<flint::unsigned_long_t>(2) );
-    //     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
-
-    //     auto ctx = std::make_shared<flint::PadicContext>(p);
-
-    //     flint::PadicNumber padic(ctx, flint::signed_long_t(10));
-    //     padic.set( static_cast<flint::unsigned_long_t>(1057) );
-    //     std::cout << "x = " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-    //     std::cout << "\n";
-    // }
-
-    // // case 3 (x ≡ -127 mod 3^10)
-    // {
-    //     std::cout << "x ≡ -127 mod 3^10" << "\n";
-
-    //     flint::Fmpz p;
-    //     p.set( static_cast<flint::unsigned_long_t>(3) );
-    //     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
-
-    //     auto ctx = std::make_shared<flint::PadicContext>(p);
-
-    //     flint::PadicNumber padic(ctx, flint::signed_long_t(10));
-    //     padic.set( static_cast<flint::signed_long_t>(-127) );
-    //     std::cout << "x = " << padic << " (" << padic.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-    //     std::cout << "\n";
-    // }
-
-    // // log case 1
-    // {
-    //     std::cout << "log(7380996) mod 5^20" << "\n";
-
-    //     flint::Fmpz p;
-    //     p.set( static_cast<flint::unsigned_long_t>(5) );
-    //     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
-
-    //     auto ctx = std::make_shared<flint::PadicContext>(p, 10, 25);
-
-    //     flint::PadicNumber x(ctx);
-    //     x.set( static_cast<flint::unsigned_long_t>(7380996) );
-    //     std::cout << "x =" << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-
-    //     auto y = flint::log(x);
-    //     std::cout << "log(x) = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-    //     std::cout << "\n";
-    // }
-    
-    // // exp case 1
-    // {
-    //     std::cout << "exp(4) mod 2^10" << "\n";
-
-    //     flint::Fmpz p;
-    //     p.set( static_cast<flint::unsigned_long_t>(2) );
-    //     std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
-
-    //     auto ctx = std::make_shared<flint::PadicContext>(p, 10, 25);
-
-    //     flint::PadicNumber x(ctx);
-    //     x.set( static_cast<flint::unsigned_long_t>(4) );
-    //     std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-
-    //     auto y = flint::exp(x);
-    //     std::cout << "exp(x) = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-    //     std::cout << "\n";
-    // }
-
-    // // addition
-    // {
-    //     std::cout << "x + y" << "\n";
-
-    //     for(flint::unsigned_long_t p = 2; p < 100; p++)
-    //     {
-
-    //         flint::Fmpz prime;
-    //         prime.set(p);
-    //         if(prime.isPrime())
-    //         {
-    //             std::cout << "p: " << prime << " (0b" << prime.toString(flint::Base(2)) << ")" << "\n";
-
-    //             auto ctx = std::make_shared<flint::PadicContext>(prime, 0, 1);
-
-    //             flint::PadicNumber x(ctx);
-    //             x.set( static_cast<flint::unsigned_long_t>(2*3*5*7*11*13*17*) );
-    //             std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-
-    //             flint::PadicNumber y(ctx);
-    //             y.set( static_cast<flint::unsigned_long_t>(5) );
-    //             std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-
-    //             auto z = x + y;
-    //             std::cout << "x + y = " << z << " (" << z.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
-    //             std::cout << "\n";
-    //         }
-    //     }
-    // }
-
-
-// }
 
 TEST_LIST = {
    { "test_case_1", test_case_1 },
    { "test_case_2", test_case_2 },
    { "test_case_2", test_case_3 },
    { "test_logarithm", test_logarithm },
-   { "test_logarithm", test_exp },
+   { "test_exp", test_exp },
+   { "test_add", test_add },
 
    { NULL, NULL }     /* zeroed record marking the end of the list */
 };
