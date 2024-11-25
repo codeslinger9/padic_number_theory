@@ -23,4 +23,7 @@ target_link_libraries(test flint)
 
 add_executable(padic padic.cpp)
 target_link_libraries(padic flint)
+#target_compile_options(padic PRIVATE -fsanitize=integer -Wall -Wextra -pedantic -Werror,-Wmacro-redefined)
+target_compile_options(padic PRIVATE -Wall -Wextra -pedantic -Werror,-Wmacro-redefined)
+
 set_property(TARGET padic PROPERTY CXX_STANDARD 23)

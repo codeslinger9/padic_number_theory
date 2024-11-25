@@ -11,21 +11,22 @@
 #include <flint/aprcl.h>
 #include <flint/padic.h>
 
+
 #include <memory>
 #include <string>
-
+#include <stdexcept>
 
 #include "exprtk.hpp"
 #include "acutest.h"
 #include <iostream>
-
+#include <limits>
 
 // FLINT C++ wrapper
 
 namespace flint 
 {
-    using unsigned_long_t = mp_limb_t;
-    using signed_long_t = mp_limb_signed_t;
+    using unsigned_long_t = mp_limb_t;       // width of one segment of an unsigned GMP multi-precision integer
+    using signed_long_t = mp_limb_signed_t;  // width of one segment of a signed GMP multi-precision integer
 
     enum class PadicPrintMode : uint8_t
     {
@@ -258,9 +259,9 @@ namespace flint
 
 void test_case_1() 
 {
-#define P 7
-#define X 127
-#define PREC 10
+#define P 7ull
+#define X 127ull
+#define PREC 10ull
 
     flint::Fmpz p;
     p.set( static_cast<flint::unsigned_long_t>(P) );
@@ -330,9 +331,9 @@ void test_case_2()
 
 void test_case_3() 
 {
-#define P 3
-#define X -127
-#define PREC 10
+#define P 3ull
+#define X -127ll
+#define PREC 10ull
 
     flint::Fmpz p;
     p.set(static_cast<flint::unsigned_long_t>(P));
@@ -368,8 +369,8 @@ void test_case_3()
 
 void test_logarithm() 
 {
-#define P 5
-#define X 7380996
+#define P 5ull
+#define X 7380996ull
 
     flint::Fmpz p;
     p.set(static_cast<flint::unsigned_long_t>(P));
@@ -454,9 +455,33 @@ void test_exp()
     std::cout << "\n";
 }
 
+bool multiply_with_overflow_check(flint::unsigned_long_t a, flint::unsigned_long_t b, flint::unsigned_long_t& result) {
+    if (a > 0 && b > std::numeric_limits<flint::unsigned_long_t>::max() / a) {
+        return false; // Overflow would occur
+    }
+    result = a * b;
+    return true;
+}
+
 void test_add() 
 {
     std::cout << "x + y" << "\n";
+
+    flint::unsigned_long_t x_int = 1;
+    for (flint::unsigned_long_t p = 2; p <= 47; p++)
+    {
+
+        flint::Fmpz prime;
+        prime.set(p);
+        if (prime.isPrime())
+        {
+            if (!multiply_with_overflow_check(x_int, p, x_int)) 
+            {
+                throw std::overflow_error("Integer overflow detected");
+            }
+            std::cout << p << ": " << x_int << "\n";
+        }
+    }
 
     for (flint::unsigned_long_t p = 2; p < 100; p++)
     {
@@ -470,11 +495,11 @@ void test_add()
             auto ctx = std::make_shared<flint::PadicContext>(prime, 0, 1);
 
             flint::PadicNumber x(ctx);
-            x.set(static_cast<flint::unsigned_long_t>(2 * 3 * 5 * 7 * 11 * 13 * 17 * 19));
+            x.set(static_cast<flint::unsigned_long_t>(x_int));
             std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
 
             flint::PadicNumber y(ctx);
-            y.set(static_cast<flint::unsigned_long_t>(5));
+            y.set(static_cast<flint::unsigned_long_t>(1));
             std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
 
             auto z = x + y;
