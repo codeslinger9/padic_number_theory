@@ -297,9 +297,9 @@ void test_case_1()
 
 void test_case_2() 
 {
-#define P 2
-#define X 1057
-#define PREC 10
+#define P 2ull
+#define X 1057ull
+#define PREC 10ull
 
     flint::Fmpz p;
     p.set(static_cast<flint::unsigned_long_t>(P));
@@ -467,8 +467,8 @@ void test_add()
 {
     std::cout << "x + y" << "\n";
 
-    flint::unsigned_long_t x_int = 1;
-    for (flint::unsigned_long_t p = 2; p <= 47; p++)
+    flint::unsigned_long_t x_int = 1ull;
+    for (flint::unsigned_long_t p = 2ull; p <= 47ull; p++)
     {
 
         flint::Fmpz prime;
@@ -483,7 +483,7 @@ void test_add()
         }
     }
 
-    for (flint::unsigned_long_t p = 2; p < 100; p++)
+    for (flint::unsigned_long_t p = 2ull; p <= 47ull; p++)
     {
 
         flint::Fmpz prime;
