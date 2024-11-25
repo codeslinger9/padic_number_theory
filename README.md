@@ -1,4 +1,4 @@
-# $`p`$-adic computational number theory
+# FLINT C++ wrapper for $`p`$-adic numbers
 
 * $`\mathbb{N} = \{1,2,...\}`$ 
 * $`\mathbb{Z} = \{...,-2,-1,±0,+1,+2,...\}`$
