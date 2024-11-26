@@ -204,6 +204,10 @@ namespace flint
             return std::string(str);
         }
 
+        signed_long_t val() const
+        {
+            return padic_val(_val);
+        }
 
         friend PadicNumber operator + (const PadicNumber& lhs, const PadicNumber& rhs); 
         friend PadicNumber operator - (const PadicNumber& lhs, const PadicNumber& rhs);

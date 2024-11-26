@@ -43,10 +43,12 @@ void test_case_1()
     
     TEST_CHECK(lhs == rhs);
 
+    auto val = padic.val();
 
     std::cout << "x ≡ 127 mod 7^10" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
+    std::cout << "val(x) = " << val << "\n";
     std::cout << "\n";
 }
 
@@ -78,9 +80,12 @@ void test_case_2()
     
     TEST_CHECK(lhs == rhs);
 
+    auto val = padic.val();
+
     std::cout << "x ≡ 1057 mod 2^10" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
+    std::cout << "val(x) = " << val << "\n";
     std::cout << "\n";
 }
 
@@ -115,9 +120,12 @@ void test_case_3()
     
     TEST_CHECK(lhs == rhs);
 
+    auto val = padic.val();
+
     std::cout << "x ≡ -127 mod 3^10" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
+    std::cout << "val(x) = " << val << "\n";
     std::cout << "\n";
 }
 
@@ -157,11 +165,16 @@ void test_logarithm()
     
     TEST_CHECK(lhs == rhs);
 
+    auto x_val = x.val();
+    auto y_val = y.val();
+
 
     std::cout << "log(7380996) mod 5^20" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x =" << x_str_terse << " (" << x_str_series << ")" << "\n";
     std::cout << "log(x) = " << y_str_terse << " (" << y_str_series << ")" << "\n";
+    std::cout << "val(x) = " << x_val << "\n";
+    std::cout << "val(log(x)) = " << y_val << "\n";
     std::cout << "\n";
 }
 
@@ -202,11 +215,16 @@ void test_exp()
     
     TEST_CHECK(lhs == rhs);
 
+    auto x_val = x.val();
+    auto y_val = y.val();
+
 
     std::cout << "exp(4) mod 2^10" << "\n";
     std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
     std::cout << "exp(x) = " << y_str_terse << " (" << y_str_series << ")" << "\n";
+    std::cout << "val(x) = " << x_val << "\n";
+    std::cout << "val(exp(x)) = " << y_val << "\n";
     std::cout << "\n";
 }
 
@@ -254,11 +272,18 @@ void test_add()
             y.set(static_cast<flint::unsigned_long_t>(1));
 
             auto z = x + y;
+
+            auto x_val = x.val();
+            auto y_val = y.val();
+            auto z_val = z.val();
             
             std::cout << "p: " << prime << " (0b" << prime.toString(flint::Base(2)) << ")" << "\n";
             std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
             std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
             std::cout << "x + y = " << z << " (" << z.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+            std::cout << "val(x) = " << x_val << "\n";
+            std::cout << "val(y) = " << y_val << "\n";
+            std::cout << "val(x + y) = " << z_val << "\n";
             std::cout << "\n";
         }
     }
