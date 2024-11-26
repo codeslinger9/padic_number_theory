@@ -44,11 +44,13 @@ void test_case_1()
     TEST_CHECK(lhs == rhs);
 
     auto val = padic.val();
+    auto prec = padic.prec();
 
     std::cout << "x ≡ 127 mod 7^10" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
     std::cout << "val(x) = " << val << "\n";
+    std::cout << "prec(x) = " << prec << "\n";
     std::cout << "\n";
 }
 
@@ -81,11 +83,13 @@ void test_case_2()
     TEST_CHECK(lhs == rhs);
 
     auto val = padic.val();
+    auto prec = padic.prec();
 
     std::cout << "x ≡ 1057 mod 2^10" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
     std::cout << "val(x) = " << val << "\n";
+    std::cout << "prec(x) = " << prec << "\n";
     std::cout << "\n";
 }
 
@@ -121,11 +125,13 @@ void test_case_3()
     TEST_CHECK(lhs == rhs);
 
     auto val = padic.val();
+    auto prec = padic.prec();
 
     std::cout << "x ≡ -127 mod 3^10" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
     std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
     std::cout << "val(x) = " << val << "\n";
+    std::cout << "prec(x) = " << prec << "\n";
     std::cout << "\n";
 }
 
@@ -168,6 +174,9 @@ void test_logarithm()
     auto x_val = x.val();
     auto y_val = y.val();
 
+    auto x_prec = x.prec();
+    auto y_prec = y.prec();
+
 
     std::cout << "log(7380996) mod 5^20" << "\n";
     std::cout << "p = " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
@@ -175,6 +184,8 @@ void test_logarithm()
     std::cout << "log(x) = " << y_str_terse << " (" << y_str_series << ")" << "\n";
     std::cout << "val(x) = " << x_val << "\n";
     std::cout << "val(log(x)) = " << y_val << "\n";
+    std::cout << "prec(x) = " << x_prec << "\n";
+    std::cout << "prec(log(x)) = " << y_prec << "\n";
     std::cout << "\n";
 }
 
@@ -218,6 +229,9 @@ void test_exp()
     auto x_val = x.val();
     auto y_val = y.val();
 
+    auto x_prec = x.prec();
+    auto y_prec = y.prec();
+
 
     std::cout << "exp(4) mod 2^10" << "\n";
     std::cout << "p: " << p << " (0b" << p.toString(flint::Base(2)) << "), is prime: " << p.isPrime() << "\n";
@@ -225,6 +239,8 @@ void test_exp()
     std::cout << "exp(x) = " << y_str_terse << " (" << y_str_series << ")" << "\n";
     std::cout << "val(x) = " << x_val << "\n";
     std::cout << "val(exp(x)) = " << y_val << "\n";
+    std::cout << "prec(x) = " << x_prec << "\n";
+    std::cout << "prec(exp(x)) = " << y_prec << "\n";
     std::cout << "\n";
 }
 
@@ -318,11 +334,45 @@ void test_sub()
     const std::string z_str_terse = z.toString(flint::PadicPrintMode::TERSE);
     const std::string z_str_series = z.toString(flint::PadicPrintMode::SERIES);
 
+    auto x_val = x.val();
+    auto y_val = y.val();
+    auto z_val = z.val();
+
     std::cout << "x - y" << "\n";
     std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
     std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
     std::cout << "x - y = " << z << " (" << z.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+    std::cout << "val(x) = " << x_val << "\n";
+    std::cout << "val(y) = " << y_val << "\n";
+    std::cout << "val(x - y) = " << z_val << "\n";
     std::cout << "\n";
+}
+
+void test_val()
+{
+#define P 7ull
+    flint::Fmpz prime;
+    prime.set(static_cast<flint::unsigned_long_t>(P));
+
+    auto ctx = std::make_shared<flint::PadicContext>(prime);
+    flint::PadicNumber x(ctx);
+
+    flint::unsigned_long_t n = 1ull;
+
+    for(int i = 0; i < 10; i++)
+    {
+        n *= P;
+
+        x.set(n);
+
+        auto val = x.val();
+        const std::string x_str_terse = x.toString(flint::PadicPrintMode::TERSE);
+        const std::string x_str_series = x.toString(flint::PadicPrintMode::SERIES);
+
+        std::cout << "x = " << x_str_terse << " (" << x_str_series << ")" << "\n";
+        std::cout << "val(x) = " << val << "\n";
+        std::cout << "\n";
+    }
 }
 
 TEST_LIST = {
@@ -333,5 +383,6 @@ TEST_LIST = {
    { "test_exp", test_exp },
    { "test_add", test_add },
    { "test_sub", test_sub },
+   { "test_sub", test_val },
    { NULL, NULL }     /* zeroed record marking the end of the list */
 };

@@ -13,6 +13,8 @@
 #include <string>
 #include <stdexcept>
 
+#include <iostream>
+
 namespace flint 
 {
     using unsigned_long_t = mp_limb_t;       // width of one segment of an unsigned GMP multi-precision integer
@@ -102,6 +104,8 @@ namespace flint
             return aprcl_is_prime(_val);
         }
 
+        friend Fmpz operator * (const Fmpz& lhs, const Fmpz& rhs); 
+
         ~Fmpz() 
         {
             fmpz_clear(_val);
@@ -113,6 +117,14 @@ namespace flint
             return os;
         }
     };
+
+    Fmpz operator * (const Fmpz& lhs, const Fmpz& rhs) 
+    {
+        Fmpz y;
+        fmpz_mul(y._val, lhs._val, rhs._val);
+        return y;
+    }
+
 
     class PadicContext 
     {
@@ -208,6 +220,12 @@ namespace flint
         {
             return padic_val(_val);
         }
+        
+        signed_long_t prec() const
+        {
+            return padic_get_prec(_val);
+        }
+
 
         friend PadicNumber operator + (const PadicNumber& lhs, const PadicNumber& rhs); 
         friend PadicNumber operator - (const PadicNumber& lhs, const PadicNumber& rhs);
