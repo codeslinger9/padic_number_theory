@@ -348,6 +348,49 @@ void test_sub()
     std::cout << "\n";
 }
 
+void test_mul()
+{
+#define P 7ull
+#define X 1069ull
+#define Y 1067ull
+#define PREC 10ull
+
+    flint::Fmpz p;
+    p.set(static_cast<flint::unsigned_long_t>(P));
+
+    auto ctx = std::make_shared<flint::PadicContext>(p);
+
+    flint::PadicNumber x(ctx, flint::signed_long_t(PREC));
+    x.set(static_cast<flint::unsigned_long_t>(X));
+
+    flint::PadicNumber y(ctx, flint::signed_long_t(PREC));
+    y.set(static_cast<flint::unsigned_long_t>(Y));
+
+    auto z = x * y;
+
+    const std::string x_str_terse = x.toString(flint::PadicPrintMode::TERSE);
+    const std::string x_str_series = x.toString(flint::PadicPrintMode::SERIES);
+
+    const std::string y_str_terse = y.toString(flint::PadicPrintMode::TERSE);
+    const std::string y_str_series = y.toString(flint::PadicPrintMode::SERIES);
+
+    const std::string z_str_terse = z.toString(flint::PadicPrintMode::TERSE);
+    const std::string z_str_series = z.toString(flint::PadicPrintMode::SERIES);
+
+    auto x_val = x.val();
+    auto y_val = y.val();
+    auto z_val = z.val();
+
+    std::cout << "x * y" << "\n";
+    std::cout << "x = " << x << " (" << x.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+    std::cout << "y = " << y << " (" << y.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+    std::cout << "x * y = " << z << " (" << z.toString(flint::PadicPrintMode::SERIES) << ")" << "\n";
+    std::cout << "val(x) = " << x_val << "\n";
+    std::cout << "val(y) = " << y_val << "\n";
+    std::cout << "val(x * y) = " << z_val << "\n";
+    std::cout << "\n";
+}
+
 void test_val()
 {
 #define P 7ull
@@ -358,7 +401,6 @@ void test_val()
     flint::PadicNumber x(ctx);
 
     flint::unsigned_long_t n = 1ull;
-
     for(int i = 0; i < 10; i++)
     {
         n *= P;
@@ -383,6 +425,7 @@ TEST_LIST = {
    { "test_exp", test_exp },
    { "test_add", test_add },
    { "test_sub", test_sub },
+   { "test_mul", test_mul },
    { "test_sub", test_val },
    { NULL, NULL }     /* zeroed record marking the end of the list */
 };

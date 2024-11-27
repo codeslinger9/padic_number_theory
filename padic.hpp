@@ -229,6 +229,8 @@ namespace flint
 
         friend PadicNumber operator + (const PadicNumber& lhs, const PadicNumber& rhs); 
         friend PadicNumber operator - (const PadicNumber& lhs, const PadicNumber& rhs);
+        friend PadicNumber operator * (const PadicNumber& lhs, const PadicNumber& rhs);
+        friend PadicNumber operator / (const PadicNumber& lhs, const PadicNumber& rhs);
 
         friend PadicNumber log(const PadicNumber& x, signed_long_t prec);
         friend PadicNumber exp(const PadicNumber& x, signed_long_t prec);
@@ -251,6 +253,20 @@ namespace flint
     {
         PadicNumber y(lhs.getContext());
         padic_sub(y._val, lhs._val, rhs._val, lhs._getContext());
+        return y;
+    }
+
+    PadicNumber operator * (const PadicNumber& lhs, const PadicNumber& rhs) 
+    {
+        PadicNumber y(lhs.getContext());
+        padic_mul(y._val, lhs._val, rhs._val, lhs._getContext());
+        return y;
+    }
+
+    PadicNumber operator / (const PadicNumber& lhs, const PadicNumber& rhs) 
+    {
+        PadicNumber y(lhs.getContext());
+        padic_div(y._val, lhs._val, rhs._val, lhs._getContext());
         return y;
     }
 
