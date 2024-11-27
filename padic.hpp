@@ -211,9 +211,10 @@ namespace flint
         //! @param b The base to print the value in.
         std::string toString(const PadicPrintMode& mode) 
         {
-            _ctx->setPrintMode(mode);
             char* str = padic_get_str(nullptr, _val, _getContext());
-            return std::string(str);
+            std::string result(str);
+            flint_free(str); // Free the allocated memory
+            return result; // Move semantics avoid copy
         }
 
         signed_long_t val() const

@@ -426,6 +426,6 @@ TEST_LIST = {
    { "test_add", test_add },
    { "test_sub", test_sub },
    { "test_mul", test_mul },
-   { "test_sub", test_val },
+   { "test_val", test_val },
    { NULL, NULL }     /* zeroed record marking the end of the list */
 };
